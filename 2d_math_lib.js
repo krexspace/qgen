@@ -1,5 +1,7 @@
 // To Test
-/*    
+/*
+// Cloth code
+//https://blog.raananweber.com/2016/04/03/cloth-physics-simulation-for-babylon-js/
 // Creation of a lines mesh
 	var lines = BABYLON.Mesh.CreateLines("lines", [
         new BABYLON.Vector3(-10, 0, 0),
@@ -23,9 +25,9 @@
 */
 
 // param: var angle = Math.PI / 8;
-qg.rotateVector_AxisAngle = function(bvec3, axisBvec, angle) {
-    var axis = new BABYLON.Vector3(0, 1, 0);
-    var quaternion = new BABYLON.Quaternion.RotationAxis(axisBvec, angle);
-    
-    return bvec3.rotateByQuaternionToRef(quaternion);
+qg.rotateVector_EulerVec = function(bvec3, rotEulerVec) {
+    var quaternion = BABYLON.Quaternion.FromEulerVector(rotEulerVec);
+    //var quaternion = new BABYLON.Quaternion.RotationAxis(axisBvec, angle); // check
+    //console.log(bvec3, quaternion);
+    return bvec3.rotateByQuaternionToRef(quaternion, bvec3);
 }

@@ -1,6 +1,6 @@
 var qg = {
     vec3: function(x, y, z) {
-        new BABYLON.Vector3(x, y, z);
+        return new BABYLON.Vector3(x, y, z);
     }
 }
 
@@ -15,7 +15,7 @@ function createCommonSceneElements(scene) {
     light.intensity = 0.7;
 
     //scene.defaultMaterial.wireframe = true;
-    scene.defaultMaterial.diffuseColor  =  new BABYLON.Color3(0.5, 0.5, 0.2);
+    scene.defaultMaterial.diffuseColor  =  new BABYLON.Color3(0.8, 0.2, 0.0);
 
     scene.clearColor = new BABYLON.Color3(0.03, 0.03, 0.02);
 

@@ -49,7 +49,7 @@
         var canvas = document.getElementById("renderCanvas");
 
         var engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
-        var scene = createScene();
+        var scene = createScene3();
 
         engine.runRenderLoop(function () {
             if (scene) {

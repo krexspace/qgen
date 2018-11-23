@@ -70,3 +70,32 @@ var createScene2 = function () {
     return scene;
 
 };
+
+var createScene3 = function () {
+
+    // This creates a basic Babylon Scene object (non-mesh)
+    var scene = new BABYLON.Scene(engine);
+
+    createCommonSceneElements(scene);
+
+    var spheres = [];
+    var pos = qg.vec3(10,0,0);
+    var C = 500;
+    const pi = Math.PI;
+    var deltaAngle = pi * 2/ C;
+    const f = 2.0;
+    const a = 0.5;
+	for (var i = 1; i <= C; i++) {
+        var s = BABYLON.MeshBuilder.CreateSphere("s" + i, { diameter: 0.5 }, scene);
+        var scaleFactor = a + (Math.cos((i * 2 * f * pi)/ C) + 1) / 2;
+        //console.log('scaleFactor=',scaleFactor);
+        var pos2 = pos.scale(scaleFactor);
+        s.position = pos2;
+        
+        pos = qg.rotateVector_EulerVec(pos, qg.vec3(0,deltaAngle, 0));
+        
+	}
+	
+    return scene;
+
+};
