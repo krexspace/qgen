@@ -1,4 +1,4 @@
-
+'use strict'
 var createScene = function () {
     var scene = new BABYLON.Scene(engine);
     createCommonSceneElements(scene);
@@ -39,7 +39,8 @@ var createScene = function () {
 var createScene2 = function () {
 
     // This creates a basic Babylon Scene object (non-mesh)
-    var scene = new BABYLON.Scene(engine);
+    var scene = 
+    new BABYLON.Scene(engine);
 
     createCommonSceneElements(scene);
 
@@ -99,3 +100,61 @@ var createScene3 = function () {
     return scene;
 
 };
+
+var createScene4 = function () {
+
+    // This creates a basic Babylon Scene object (non-mesh)
+    var scene = new BABYLON.Scene(engine);
+
+    createCommonSceneElements(scene);
+
+    let spheres = [];
+    let spreadData = {
+        radius: 100.0,
+        count: 1000,
+        r_amp: 0.2,
+        freq: 20.0
+    }
+    let scaleVariator = (p) => {
+        var scaleFactor = p.r_amp + (Math.cos((p.i * 2 * p.freq * Math.PI)/ p.count) + 1) / 2;
+        return scaleFactor;
+    }
+    let pos_spread = qg.positionRadialSpreader(spreadData, scaleVariator);
+	for(let i in pos_spread) {
+        var s = BABYLON.MeshBuilder.CreateSphere("s" + i, { diameter: 0.5 }, scene);
+        s.position = pos_spread[i];
+    }
+    return scene;
+};
+
+var createScene5 = function () {
+    var scene = new BABYLON.Scene(engine);
+    createCommonSceneElements(scene);
+
+    //Array of paths to construct extrusion
+
+    let spreadData = {
+        radius: 10.0,
+        count: 5,
+        r_amp: 0.5,
+        freq: 0.0
+    }
+    let scaleVariator = (p) => {
+        var scaleFactor = p.r_amp + (Math.cos((p.i * 2 * p.freq * Math.PI)/ p.count) + 1) / 2;
+        return scaleFactor;
+    }
+    let pos_spread = qg.positionRadialSpreader(spreadData, scaleVariator);
+    qg.displayPreviewSpheresAtPositions(scene, pos_spread);
+    //myShape.push(myShape[0]);
+    let s = 3;
+    var myPath = [
+            new BABYLON.Vector3(10, 0, 0),
+            new BABYLON.Vector3(10, 10, 0)
+    ];
+    
+    //Create extrusion with updatable parameter set to true for later changes
+    var extrusion = BABYLON.MeshBuilder.ExtrudeShape("star", {shape: pos_spread, path: myPath, scale:2,sideOrientation: BABYLON.Mesh.DOUBLESIDE, updatable: true}, scene);
+            
+
+    return scene;
+}

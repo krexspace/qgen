@@ -12,7 +12,7 @@ function createCommonSceneElements(scene) {
     var light = new BABYLON.HemisphericLight("hemi", new BABYLON.Vector3(0, 50, 0), scene);
 
     // Default intensity is 1. Let's dim the light a small amount
-    light.intensity = 0.7;
+    //light.intensity = 1.0;
 
     //scene.defaultMaterial.wireframe = true;
     scene.defaultMaterial.diffuseColor  =  new BABYLON.Color3(0.8, 0.2, 0.0);
