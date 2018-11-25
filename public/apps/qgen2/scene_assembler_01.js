@@ -118,8 +118,9 @@ qg_scene_lib.PROCEDURAL_SCENE_01 = (qscene) => {
         newPos.x = pos_vec_orig.x;
         newPos.z = pos_vec_orig.z;
         const STEP_1 = STEPS/2;
-        const scaleX = (1 - j*j/(STEPS*STEPS))// + Math.cos(j*2)/10;
-        const scaleZ = (1 - STEP_1*STEP_1/(STEPS*STEPS))// + Math.cos(j*2)/10;
+        const scaleX = (1 - j*j/(STEPS*STEPS)) + Math.cos(j*2)/100;
+        const scaleZ = (1 - STEP_1*STEP_1/(STEPS*STEPS)) + Math.cos(j*2)/100;
+        
 
         //let pxz = new BABYLON.Vector2(newPos.x, newPos.z);
         // j = 0 S=1 j=30, S=0  1 - (j/30)
