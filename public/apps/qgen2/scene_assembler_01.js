@@ -1,3 +1,4 @@
+'use strict'
 qg_scene_lib.HDR_SCENE_01 = (qscene) => {
     let scene = qscene.scene;
 
@@ -85,7 +86,7 @@ qg_scene_lib.PROCEDURAL_SCENE_01 = (qscene) => {
     mat.backFaceCulling = false;
     //mat.diffuseColor  =  new BABYLON.Color3(0.8, 0.2, 0.0);
     */
-    /*
+    
     var glass = new BABYLON.PBRMaterial("glass", scene);
     glass.reflectionTexture = qscene.textures.env_hdr;
     glass.refractionTexture = qscene.textures.env_hdr;
@@ -95,8 +96,10 @@ qg_scene_lib.PROCEDURAL_SCENE_01 = (qscene) => {
     glass.microSurface = 1;
     glass.reflectivityColor = new BABYLON.Color3(0.2, 0.2, 0.2);
     glass.albedoColor = new BABYLON.Color3(0.85, 0.85, 0.85);
+    glass.backFaceCulling = false;
+    //glass.wireframe = true;
     customMesh.material = glass;
-      */
+      
 
     var metal = new BABYLON.PBRMaterial("metal", scene);
     metal.reflectionTexture = qscene.textures.env_hdr;
@@ -106,31 +109,39 @@ qg_scene_lib.PROCEDURAL_SCENE_01 = (qscene) => {
     metal.backFaceCulling = false;
     //metal.wireframe = true;
     //sphereMetal.material = metal;
-    customMesh.material = metal;
-
+    //customMesh.material = metal;
+    const STEPS = 50;
     let posTransformer = (pos_vec_orig, pos_vec, i, j) => {
         let newPos = pos_vec.clone();
+        j = j + 1;
         newPos.y += 1;
         newPos.x = pos_vec_orig.x;
         newPos.z = pos_vec_orig.z;
+        const STEP_1 = STEPS/2;
+        const scaleX = (1 - j*j/(STEPS*STEPS))// + Math.cos(j*2)/10;
+        const scaleZ = (1 - STEP_1*STEP_1/(STEPS*STEPS))// + Math.cos(j*2)/10;
 
-        //newPos.x += Math.cos(j/2) * 2;
-        newPos.x = newPos.x / (j+1);
-        //newPos.z += Math.sin(j/2) * 2;
-        newPos.z = newPos.z / (j+1);
-        console.log(pos_vec_orig, newPos, i, j);
+        //let pxz = new BABYLON.Vector2(newPos.x, newPos.z);
+        // j = 0 S=1 j=30, S=0  1 - (j/30)
+        //pxz = pxz.scale(1 - j/STEPS);
+        //newPos.x += Math.cos(j*2)/10;
+        newPos.x *= j<STEPS/2?scaleX:scaleZ;
+        newPos.z *= j<STEPS/2?scaleX:scaleZ;
+        //newPos.x = newPos.x / (j+1);
+        //newPos.z += Math.sin(j*2)/10;
+        //console.log(pos_vec_orig, newPos, i, j);
         return newPos;
     }
 
     let spreadData = {
         radius: 50.0,
-        count: 100,
-        r_amp: 0.5,
+        count: 200,
+        r_amp: 0.05,
         freq: 10
     }
 
     let scaleVariator = (p) => {
-        var scaleFactor = p.r_amp + (Math.cos((p.i * 2 * p.freq * Math.PI) / p.count) + 1) / 2;
+        var scaleFactor = 1 + (Math.cos((p.i * 2 * p.freq * Math.PI) / p.count) + 1) * p.r_amp;
         return scaleFactor;
     }
     let pos_spread = qg.flattenVec3Array(qg.positionRadialSpreader(spreadData, scaleVariator));
@@ -140,7 +151,7 @@ qg_scene_lib.PROCEDURAL_SCENE_01 = (qscene) => {
     //Empty array to contain calculated values
     var normals = [];
 
-    let mesh_data = qg.genExtrudedMesh(pos_spread, posTransformer, 50);
+    let mesh_data = qg.genExtrudedMesh(pos_spread, posTransformer, STEPS);
     var vertexData = new BABYLON.VertexData();
 
     //Assign positions, indices and normals to vertexData
