@@ -96,7 +96,8 @@ setupServer();
 
 //module.exports = app;
 
-var httpsServer = https.createServer(credentials, app);
+//var httpsServer = https.createServer(credentials, app);
+var httpsServer = http.createServer(app);
 
 httpsServer.listen(process.env.PORT || 4040, function () {
     logger.info(`  
@@ -122,5 +123,5 @@ httpsServer.listen(process.env.PORT || 4040, function () {
                                                                . : :.:::::::.: :.
    `);
     logger.info('QGEN Server listening on port ' + httpsServer.address().port);
-    logger.info('Connect to https://localhost:' + httpsServer.address().port)
+    logger.info('Connect to http://localhost:' + httpsServer.address().port)
 });
