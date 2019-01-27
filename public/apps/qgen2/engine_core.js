@@ -144,7 +144,7 @@ QG_PLUGIN.GizmoManager = (scene) => {
 QG_PLUGIN.HDRSkyBox = (scene, qscene) => {
     // Create objects
     var hdrTexture = BABYLON.CubeTexture.CreateFromPrefilteredData("textures/environment.dds", scene);
-    /*
+    
     var hdrSkybox = BABYLON.Mesh.CreateBox("hdrSkyBox", 1000.0, scene);
     hdrSkybox.isPickable = false;
     var hdrSkyboxMaterial = new BABYLON.PBRMaterial("skyBox", scene);
@@ -155,9 +155,9 @@ QG_PLUGIN.HDRSkyBox = (scene, qscene) => {
     hdrSkyboxMaterial.disableLighting = true;
     hdrSkybox.material = hdrSkyboxMaterial;
     hdrSkybox.infiniteDistance = true;
-    */
+    
     qscene.textures["env_hdr"] = hdrTexture;
-    scene.clearColor = new BABYLON.Color3(0.33, 0.03, 0.02);
+    //scene.clearColor = new BABYLON.Color3(0.33, 0.03, 0.02);
 }
 
 // Deprecated

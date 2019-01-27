@@ -47,6 +47,8 @@ let scaleVariator = (p) => {
 }
 let pos_spread = qg.positionRadialSpreader(spreadData, scaleVariator);
 param: direction is 1 or -1 (clockwise/anti clockwise)
+@PUBLIC_METHOD 
+@USES_LAMBDA: f_radialScaleVariator
 */
 qg.positionRadialSpreader = (p, f_radialScaleVariator, direction=1) => {
     const C = p.count;
@@ -77,6 +79,7 @@ qg.displayPreviewSpheresAtPositions = (scene, pos_list, diameter, material) => {
         if(material) s.material = material;
     }
 }
+
 // Raw pos_list array
 qg.displayPreviewSpheresAtPositions_2 = (scene, pos_list, diameter, material) => {
     let dia = diameter ? diameter : 0.5;
@@ -89,26 +92,45 @@ qg.displayPreviewSpheresAtPositions_2 = (scene, pos_list, diameter, material) =>
     }
 }
 
+/*
 // Assumes source indexes are in order
-qg.extrude_findIndexOrderOfStrip = (base_vpos_array, startIndex = 0, isClosed = true) => {
+@LOCAL_LAMBDA
+*/
+qg.extrude_findIndexOrderOfStrip = (baseSize, startIndex = 0, isClosed = true) => {
     let indices = [];
-    let N = base_vpos_array.length / 3;
+    const N = baseSize;
+    const eN = N - 1;
     for (let i = 0; i < N; i++) {
         let k = startIndex + i;
-        if (i == (N - 1)) { // end of strip joined to start, if closed, else do not join
-            if (isClosed) indices.push(k, startIndex, k + 1, k + 1, k + N, k);
+        if (i == eN) { // end of strip joined to start, if closed, else do not join
+            // Create 1 quad face, i.e 2 tris
+            if (isClosed) indices.push(
+                k, startIndex, k + 1, // Tri 1
+                k + 1, k + N, k       // Tri 2
+            );
         } else {
-            indices.push(k, k + 1, k + 1 + N, k + 1 + N, k + N, k);
+            // Create 1 quad face, i.e 2 tris
+            indices.push(
+                k, k + 1, k + 1 + N, // Tri 1
+                k + 1 + N, k + N, k  // Tri 2 
+            );
         }
     }
     //console.log('indices:', indices);
     return indices;
 }
 
+/*
+// Inputs are flat float arrays of x,y,z coords, and not vector arrays
+
+@LOCAL_LAMBDA
+*/
 qg.extrude_findNextExtrudedPositions = (orig_vpos_array, src_vpos_array, f_posTranformer, steps_j = 0) => {
     let vx_array = [];
-    //let nPos = src_vpos_array.length/3;
     for (let i = 0; i < src_vpos_array.length; i += 3) {
+
+        // Apply the transformation for each vertex. Returns a new vector.
+        // Inputs are also converted to vectors
         let vx = f_posTranformer(
             qg.vec3(orig_vpos_array[i], orig_vpos_array[i + 1], orig_vpos_array[i + 2]),
             qg.vec3(src_vpos_array[i], src_vpos_array[i + 1], src_vpos_array[i + 2]),
@@ -118,14 +140,19 @@ qg.extrude_findNextExtrudedPositions = (orig_vpos_array, src_vpos_array, f_posTr
     return vx_array;
 }
 
+/*
+@PUBLIC_METHOD
+@USES_LAMBDA: private: extrude_findNextExtrudedPositions, extrude_findIndexOrderOfStrip
+*/
 qg.genExtrudedMesh = (base_vpos_array, f_posTranformer, steps, isClosed = true) => {
     let final_pos_array = base_vpos_array;
     let final_index_array = [];
-    let N = base_vpos_array.length;
-    let next_pos_array = base_vpos_array;
+    const N = base_vpos_array.length / 3;
+    let next_pos_array = base_vpos_array; // Full array value copy is not necessary
     for (let m = 0; m < steps; m++) {
+        // Full array value copy is not necessary
         next_pos_array = qg.extrude_findNextExtrudedPositions(base_vpos_array, next_pos_array, f_posTranformer, m);
-        let strip_indices = qg.extrude_findIndexOrderOfStrip(next_pos_array, N * m / 3, isClosed);
+        let strip_indices = qg.extrude_findIndexOrderOfStrip(N, N * m, isClosed);
         final_pos_array.push(...next_pos_array);
         final_index_array.push(...strip_indices);
     }

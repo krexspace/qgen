@@ -98,7 +98,7 @@ setupServer();
 
 var httpsServer = https.createServer(credentials, app);
 
-httpsServer.listen(process.env.PORT || 3553, function () {
+httpsServer.listen(process.env.PORT || 4040, function () {
     logger.info(`  
     o8o.               ..,o8889689ooo888o"88888888oooc..
   .88888             .o888896888".88888888o'?888888888889ooo....
@@ -115,12 +115,12 @@ httpsServer.listen(process.env.PORT || 3553, function () {
                                                           .:o888.o8o.  "866o9888o
                                                            :888.o8888.  "88."89".
                                                           . 89  888888    "88":.
-                      neonet                              :.     '8888o
+                      qgen                                :.     '8888o
                                                            .       "8888..
                                                                      888888o.
                                                                       "888889,
                                                                . : :.:::::::.: :.
    `);
-    logger.info('NEONET Server listening on port ' + httpsServer.address().port);
-
+    logger.info('QGEN Server listening on port ' + httpsServer.address().port);
+    logger.info('Connect to https://localhost:' + httpsServer.address().port)
 });
