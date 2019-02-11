@@ -93,7 +93,7 @@ qg.displayPreviewSpheresAtPositions_2 = (scene, pos_list, diameter, material) =>
 }
 
 /*
-// Assumes source indexes are in order
+Assumes source indexes are in order
 @LOCAL_LAMBDA
 */
 qg.extrude_findIndexOrderOfStrip = (baseSize, startIndex = 0, isClosed = true) => {
@@ -121,8 +121,62 @@ qg.extrude_findIndexOrderOfStrip = (baseSize, startIndex = 0, isClosed = true) =
 }
 
 /*
-// Inputs are flat float arrays of x,y,z coords, and not vector arrays
+Assumes source indexes are in order
+@LOCAL_LAMBDA
+*/
+qg.extrude_generateFaces_b = (baseSize, startIndex = 0, index_face_map, isClosed = true) => {
+    let indices = [];
+    const N = baseSize;
+    const eN = N - 1;
+    for (let i = 0; i < N; i++) {
+        let k = startIndex + i;
+        if (i == eN) { // end of strip joined to start, if closed, else do not join
+            // Create 1 quad face, i.e 2 tris
+            if (isClosed) {
+                let tri_1 = [k, startIndex, k + 1];
+                let tri_2 = [k + 1, k + N, k];
+                
+                indices.push(
+                    tri_1[0],tri_1[1], tri_1[2], // Tri 1
+                    tri_2[0],tri_2[1], tri_2[2] // Tri 2
+                );
+                for(let j in tri_1) {
+                    p_pushToIndexTriMap(tri_1[i], tri_1, index_face_map);
+                    p_pushToIndexTriMap(tri_2[i], tri_2, index_face_map);
+                }
+            }
+        } else {
+            // Create 1 quad face, i.e 2 tris
+            let tri_1 = [k, k + 1, k + 1 + N];
+            let tri_2 = [k + 1 + N, k + N, k];
+                
+            indices.push(
+                tri_1[0],tri_1[1], tri_1[2], // Tri 1
+                tri_2[0],tri_2[1], tri_2[2] // Tri 2
+            );
+            for(let j in tri_1) {
+                p_pushToIndexTriMap(tri_1[i], tri_1, index_face_map);
+                p_pushToIndexTriMap(tri_2[i], tri_2, index_face_map);
+            }
+        }
+    }
+    //console.log('indices:', indices);
+    return indices;
+}
 
+
+// Map key:index -> value:{ faces:[tri1, tri2 ] } List of tris for the index
+// @private
+qg.p_pushToIndexTriMap = (index, tri, map) => {
+    if(map[index]) {
+        // Assumes faces key exists
+        map[index].faces.push(tri);
+    } else {
+        map[index] = {faces: [tri] };
+    }
+}
+/*
+Inputs are flat float arrays of x,y,z coords, and not vector arrays
 @LOCAL_LAMBDA
 */
 qg.extrude_findNextExtrudedPositions = (orig_vpos_array, src_vpos_array, f_posTranformer, steps_j = 0) => {
@@ -145,6 +199,7 @@ qg.extrude_findNextExtrudedPositions = (orig_vpos_array, src_vpos_array, f_posTr
 @USES_LAMBDA: private: extrude_findNextExtrudedPositions, extrude_findIndexOrderOfStrip
 */
 qg.genExtrudedMesh = (base_vpos_array, f_posTranformer, steps, isClosed = true) => {
+    let index_face_map = {};
     let final_pos_array = base_vpos_array;
     let final_index_array = [];
     const N = base_vpos_array.length / 3;
@@ -152,12 +207,13 @@ qg.genExtrudedMesh = (base_vpos_array, f_posTranformer, steps, isClosed = true) 
     for (let m = 0; m < steps; m++) {
         // Full array value copy is not necessary
         next_pos_array = qg.extrude_findNextExtrudedPositions(base_vpos_array, next_pos_array, f_posTranformer, m);
-        let strip_indices = qg.extrude_findIndexOrderOfStrip(N, N * m, isClosed);
+        let strip_indices = qg.extrude_generateFaces_b(N, N * m, index_face_map, isClosed);
         final_pos_array.push(...next_pos_array);
         final_index_array.push(...strip_indices);
     }
     return {
         positions: final_pos_array,
-        indices: final_index_array
+        indices: final_index_array,
+        index_face_map: index_face_map
     };
 }
