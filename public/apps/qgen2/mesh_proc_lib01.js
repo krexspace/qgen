@@ -141,8 +141,8 @@ qg.extrude_generateFaces_b = (baseSize, startIndex = 0, index_face_map, isClosed
                     tri_2[0],tri_2[1], tri_2[2] // Tri 2
                 );
                 for(let j in tri_1) {
-                    p_pushToIndexTriMap(tri_1[i], tri_1, index_face_map);
-                    p_pushToIndexTriMap(tri_2[i], tri_2, index_face_map);
+                    qg.p_pushToIndexTriMap(tri_1[i], tri_1, index_face_map);
+                    qg.p_pushToIndexTriMap(tri_2[i], tri_2, index_face_map);
                 }
             }
         } else {
@@ -155,8 +155,8 @@ qg.extrude_generateFaces_b = (baseSize, startIndex = 0, index_face_map, isClosed
                 tri_2[0],tri_2[1], tri_2[2] // Tri 2
             );
             for(let j in tri_1) {
-                p_pushToIndexTriMap(tri_1[i], tri_1, index_face_map);
-                p_pushToIndexTriMap(tri_2[i], tri_2, index_face_map);
+                qg.p_pushToIndexTriMap(tri_1[i], tri_1, index_face_map);
+                qg.p_pushToIndexTriMap(tri_2[i], tri_2, index_face_map);
             }
         }
     }
@@ -172,6 +172,7 @@ qg.p_pushToIndexTriMap = (index, tri, map) => {
         // Assumes faces key exists
         map[index].faces.push(tri);
     } else {
+        // Create new if not exists
         map[index] = {faces: [tri] };
     }
 }
